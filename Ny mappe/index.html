@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyEnglishSpeaker</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <header>
+        <div class="logo">MyEnglishSpeaker</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </nav>
+        <a href="#" class="cta"><button>Contact</button></a>
+    </header>
+    <div class="content">
+        <div class="menu">
+            <div class="scrollable-list">
+                <div class="item"><button onclick="loadDoc('text/1.txt')">Snow White</button></div>
+                <div class="item"><button onclick="doSomething('2')">Text</button></div>
+                <div class="item"><button onclick="doSomething('3')">Text</button></div>
+                <div class="item"><button onclick="doSomething('4')">Text</button></div>
+                <div class="item"><button onclick="doSomething('5')">Text</button></div>
+                <div class="item"><button onclick="doSomething('6')">Text</button></div>
+                <div class="item"><button onclick="doSomething('7')">Text</button></div>
+                <div class="item"><button onclick="doSomething('8')">Text</button></div>
+                <div class="item"><button onclick="doSomething('9')">Text</button></div>
+                <div class="item"><button onclick="doSomething('10')">Text</button></div>
+                <div class="item"><button onclick="doSomething('11')">Text</button></div>
+                <div class="item"><button onclick="doSomething('12')">Text</button></div>
+                <div class="item"><button onclick="doSomething('13')">Text</button></div>
+            </div>
+            <div class="display-text">
+                <div class="display-menu">
+                    <button id="startBtn" onclick="startReadAloud()">Start</button>
+                    <button id="startBtn" onclick="Reset()">Reset</button>
+                </div>
+                <div>
+                    <div id="text">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+    function loadDoc(textToDisplay) {
+        $.get(textToDisplay,function(data){
+            document.getElementById('text').innerHTML = data
+            currentIndex = 0
+        });
+    }
+
+    let isStarted = false
+    let newTurn = true
+    let currentIndex = 0
+    let indexHasPassed = []
+
+    function Reset(){
+        currentIndex = 0
+        indexHasPassed = []
+        isStarted = false
+        document.getElementById("startBtn").innerHTML = "Start"
+        document.getElementById("text").innerHTML = document.getElementById("text").innerText
+    }
+
+    async function startReadAloud(){
+        if (isStarted){
+            document.getElementById("startBtn").innerHTML = "Start"
+            isStarted = false
+        } else if (!isStarted){
+            document.getElementById("startBtn").innerHTML = "Pause"
+            isStarted = true
+
+            let words = document.getElementById("text").innerText.split(" ")
+            for (let i = currentIndex; i < words.length; i++){
+                if (isStarted && newTurn){
+                    currentIndex++
+                    newTurn = false                    
+                    data = [...words]
+                    for (let wordIndex = 0; wordIndex < data.length; wordIndex++){
+                        if (data[wordIndex] == words[i] && !indexHasPassed.includes(wordIndex)){
+                            data[wordIndex] = "<span class='current-word'>" + data[wordIndex] + "</span>"
+                            indexHasPassed.push(wordIndex)
+                            break
+                        }
+                    } 
+                    textToSend = data.join(" ")
+                    document.getElementById("text").innerHTML = textToSend
+                    await new Promise(r => setTimeout(r, 1000));
+                    newTurn = true
+                }
+            }
+            if (currentIndex == words.length){
+                Reset()
+            }
+        }
+    }
+</script>
+</html>
